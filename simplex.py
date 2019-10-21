@@ -64,9 +64,10 @@ def main():
         non_basic_variables.append(leaving_var)
 
 
-        B = np.delete(B, leaving_var)
-
-        N = np.delete(N, entering_var)
+        # manter a matriz original intacta para comparação
+        # acho que vai ser melhor do que usar dict
+        # B = np.delete(B, leaving_var)
+        # N = np.delete(N, entering_var)
 
         print(B)
         print(N)
