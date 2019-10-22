@@ -33,10 +33,16 @@ def main():
 
     while minimum < 0:
 
-        b_ = np.linalg.solve(np.linalg.inv(B), b)
-        z = np.dot(cB, b_)
+        # print(np.linalg.solve(np.matrix([[1, -3],[0, 1]]), [6, 1]))
+        BT = np.transpose(B)
+        # print(BT)
+        # print(np.linalg.inv(BT))
 
-        w = np.dot(cB, np.linalg.inv(B))
+        # aqui era pra ser inv(BT) ???
+        b_ = np.linalg.solve(BT, b)
+
+        z = np.dot(cB, b_)
+        w = np.dot(cB, np.linalg.inv(BT))
         z_non_basic = []
         for j in range(len(non_basic_variables)):
             z_non_basic.append(np.dot(w, N[j]))
@@ -46,11 +52,11 @@ def main():
             aux = z_non_basic[i] - cN[i]
             min_non_basic.append(aux)
 
+        print(min_non_basic)
 
         minimum = min(min_non_basic)
         entering_var_index = min_non_basic.index(minimum)
         y = np.linalg.solve(np.linalg.inv(B), N[entering_var_index])
-
         if (y <= 0).all():
             print("ilimitada")
 
@@ -59,7 +65,14 @@ def main():
         for i in range(len(basic_variables)):
             ratio_test.append(b[i] / y[i])
 
+        print(ratio_test)
+        print(ratio_test.index(min(ratio_test)))
+
+        # O QUE FAZER????
         leaving_var_index = n_rows + ratio_test.index(min(ratio_test))
+
+        print(basic_variables)
+        print(leaving_var_index)
         basic_variables.remove(leaving_var_index)
         basic_variables.append(entering_var_index)
         non_basic_variables.remove(entering_var_index)
@@ -76,33 +89,25 @@ def main():
         B = np.vstack([B, entering_var])
         N = np.vstack([N, leaving_var])
 
-        B = np.delete(B, np.where((leaving_var == B).all(1)), 0)
-        N = np.delete(N, np.where((entering_var == N).all(1)), 0)
-        print(cB)
-        print(cN)
-        """
-        for i in cB:
-            if i == leaving_var_cost:
-                cB = np.delete(cB, leaving_var_cost.index())
+
+        for i in range(len(B)):
+            if np.allclose(B[i], leaving_var):
+                B = np.delete(B, i, 0)
                 break
 
-        for i in cN:
-            if  i == entering_var_cost:
-                cN = np.delete(cN, leaving_var_cost.index())
+        for i in range(len(N)):
+            if np.allclose(N[i], entering_var):
+                N = np.delete(N, i, 0)
                 break
 
-        """
-        # cB = cB[(leaving_var_cost != cB)]
-        # cN = cN[(entering_var_cost != cN)]
-        print(np.where(leaving_var_cost == cB)[0][0])
         cB = np.delete(cB, np.where(leaving_var_cost == cB)[0][0])
         cN = np.delete(cN, np.where(entering_var_cost == cN)[0][0])
         cB = np.append(cB, entering_var_cost)
         cN = np.append(cN, leaving_var_cost)
 
-        print(cB)
+        # print(cB)
         # print(B)
-        print(cN)
+        # print(cN)
         # print(N)
 
     if minimum >= 0:
@@ -116,4 +121,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
