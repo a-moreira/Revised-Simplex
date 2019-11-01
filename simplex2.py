@@ -33,11 +33,21 @@ def step_one(B, b, cB):
     b_ = np.linalg.solve(BT, b)
     z = np.dot(cB, b_)
 
-    return b_, z
+    return b_, z, BT
 
-def step_two(B, cB):
+def step_two(B, cB, N, BT):
     w = np.dot(cB, np.linalg.inv(BT))
+    # z_non_basic = [np.dot(w, N(j)) for j in range(N.shape[0])]
+    keys = []
+    values = []
+    for j in range(N.shape[0]):
+        values.append(np.dot(w, N[j]))
+        keys.append(tuple(N[j]))
 
+    z_non_basic = dict(zip(keys, values))
+    print(z_non_basic)
+
+    return w, z_non_basic
 
 def main():
     minimum = float('-inf')
@@ -46,9 +56,12 @@ def main():
     A, B, N, b, c, cB, cN, basic_variables, non_basic_variables = create_model(model, n_cols, n_rows)
 
     # mantemos a matriz A original para comparacao
+    # np.where((A == (2,3)).all(axis=1))
 
     while minimum < 0:
-        b_, z = step_one(B, b, cB)
+        b_, z, BT = step_one(B, b, cB)
+        w, z_non_basic = step_two(B, cB, N, BT)
+        break
 
 
 if __name__ == "__main__":
