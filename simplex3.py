@@ -1,5 +1,5 @@
 import numpy as np
-
+import fileinput
 
 def read_model(arq):
     lines_list = arq.readlines()
@@ -10,7 +10,6 @@ def read_model(arq):
 
 
 def create_model(model, n_cols, n_rows):
-    # n_var = n_cols + n_rows
     c = np.asarray(model[0])
     A = np.asarray(model[1:])
     b = A[:, -1]
@@ -20,17 +19,18 @@ def create_model(model, n_cols, n_rows):
     A = np.append(A, Id, axis=1)
     non_basic = [i for i in range(n_cols)]
     basic = [i + n_cols for i in range(n_rows)]
+
     return c, A, b, non_basic, basic
 
 
 def step_one(A, b, c, basic, non_basic):
-    b_ = np.linalg.solve(A[:, basic], b)
-    z = np.dot(c[[basic]], b_)
+    xB = np.linalg.solve(A[:, basic], b)
+    z = np.dot(c[[basic]], xB)
 
-    return b_, z
+    return xB, z
 
 
-def step_two(A, b, c, basic, non_basic, b_, minimum):
+def step_two(A, b, c, basic, non_basic, xB, minimum):
     w = np.linalg.solve(np.transpose(A[:, basic]), c[[basic]])
     idx = -1
     for j in non_basic:
@@ -44,11 +44,7 @@ def step_two(A, b, c, basic, non_basic, b_, minimum):
 
 def step_three(A, idx, basic):
     y = np.linalg.solve(A[:, basic], A[:, idx])
-    # print(y)
-    # y_ = np.zeros(np.shape(A)[1])
-    # y_[basic] = y
-    # print(y_)
-    # return y_
+
     return y
 
 
@@ -64,38 +60,29 @@ def step_four(A, b, y, basic, minimum_2):
     return leaving_var
 
 
-def main():
-    minimum = float('inf')
-    minimum_2 = float('inf')
-    arq = open("teste.txt", "r")
-    model, n_cols, n_rows = read_model(arq)
-    c, A, b, non_basic, basic = create_model(model, n_cols, n_rows)
-    # mantemos a matriz A original para comparacao
-    # np.where((A == (2,3)).all(axis=1))
-    print(c)
-    print(A)
-    print(b)
-    print(basic)
-    print(non_basic)
+def solve(c, A, b, non_basic, basic, minimum, minimum_2):
 
     while True:
-        b_, z = step_one(A, b, c, basic, non_basic)
-        print(b_)
-        print(z)
-        # idx eh eh o index da variavel que entra na base
-        w, minimum, idx = step_two(A, b, c, basic, non_basic, b_, minimum)
-        print(w)
-        print(minimum)
-        print(idx)
+        xB, z = step_one(A, b, c, basic, non_basic)
+        # print(basic)
+        # print(non_basic)
+        # print('xB:', xB)
+        # print('z:', z)
+        # idx eh o index da variavel que entra na base
+        w, minimum, idx = step_two(A, b, c, basic, non_basic, xB, minimum)
+        # w eh o certificado
+        # print('w:', w)
+        # print('minimum:', minimum)
+        # print('idx:', idx)
         if minimum >= 0:
-            certificado = "otima"
+            status = "otima"
             break
         else:
             minimum = float('inf')
         y = step_three(A, idx, basic)
 
         if (y <= 0).all():
-            certificado = "ilimitada"
+            status = "ilimitada"
             break
 
         leaving_var = step_four(A, b, y, basic, minimum_2)
@@ -106,10 +93,72 @@ def main():
         non_basic.append(leaving_var)
         basic.sort()
         non_basic.sort()
-        print(basic)
-        print(non_basic)
+        # print('basic:', basic)
+        # print('non_basic:', non_basic)
 
-    print(certificado)
+    return z, w, status, xB
+
+
+def main():
+    minimum = float('inf')
+    minimum_2 = float('inf')
+    arq = open("teste.txt", "r")
+    model, n_cols, n_rows = read_model(arq)
+    c, A, b, non_basic, basic = create_model(model, n_cols, n_rows)
+
+    # aqui criamos uma PL auxiliar
+    # SE OBJ = 0, CONTINUO NORMALMENTE
+    # SE OBJ != 0, PL ORIGINAL EH INVIAVEL
+    if (b < 0).any():
+        negative_idx = np.where(b < 0)
+        negative_idx = [i for i in negative_idx[0]]
+        c2 = np.zeros(n_cols + 2*n_rows)
+        c2[n_cols + n_rows:] = -1
+        A2 = A
+        b2 = b
+        A2[negative_idx] = -1.0*A2[negative_idx]
+        b2[negative_idx] = -1.0*b2[negative_idx]
+        A2 = np.append(A2, np.identity(n_rows), axis=1)
+        # for i in range(A2.shape[0]):
+        #   c2 = np.add(c2, A2[i])
+        non_basic2 = [i for i in range(n_cols + n_rows)]
+        basic2 = [i+n_rows+n_cols for i in range(n_rows)]
+        z, w, status, xB = solve(c2, A2, b2, non_basic2, basic2, minimum, minimum_2)
+
+        # se a PL auxiliar tem obj < 0, acabou
+        if z < 0:
+            status = 'inviavel'
+
+        # se nao, rodamos o simplex
+        else:
+            z, w, status, xB = solve(c, A, b, non_basic, basic, minimum, minimum_2)
+
+    else:
+        z, w, status, xB = solve(c, A, b, non_basic, basic, minimum, minimum_2)
+
+
+
+    solucao = [0. for i in range(n_cols + n_rows)]
+    solucao = {key:value for (key,value) in zip(basic, xB)}
+
+    x = [0. for i in range(n_rows+n_cols)]
+    for key in solucao:
+        x[key] = solucao[key]
+
+    x = x[:n_cols]
+    w = w.tolist()
+    if status == 'otima':
+        print(status)
+        print(z)
+        print(*x)
+        print(*w)
+    elif status == 'ilimitada':
+        print(status)
+        print(*x)
+        print(*w)
+    elif status == 'inviavel':
+        print(status)
+        print(*w)
 
 
 if __name__ == "__main__":
