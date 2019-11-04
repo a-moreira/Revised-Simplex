@@ -1,5 +1,5 @@
 import numpy as np
-import fileinput
+
 
 def read_model(arq):
     lines_list = arq.readlines()
@@ -106,7 +106,7 @@ def main():
     model, n_cols, n_rows = read_model(arq)
     c, A, b, non_basic, basic = create_model(model, n_cols, n_rows)
     first_basic = basic
-    first_n_basic = non_basic
+    # first_n_basic = non_basic
     # aqui criamos uma PL auxiliar
     # SE OBJ = 0, CONTINUO NORMALMENTE
     # SE OBJ != 0, PL ORIGINAL EH INVIAVEL
@@ -137,21 +137,25 @@ def main():
     else:
         z, w, status, xB = solve(c, A, b, non_basic, basic, minimum, minimum_2)
 
-
-
     solucao = [0. for i in range(n_cols + n_rows)]
-    solucao = {key:value for (key,value) in zip(basic, xB)}
-
+    solucao = {key: value for (key, value) in zip(basic, xB)}
 
     x = [0. for i in range(n_rows+n_cols)]
 
     for key in solucao:
         x[key] = solucao[key]
 
+    # x = x[:n_cols]
+
     if status == 'ilimitada':
-        w = A[, np.where((A < 0).all())]
+        w = np.zeros(n_cols+n_rows)
+        aux = np.where((A[1:] < 0).all(axis=0))
+        w[aux[0][0]] = 1
+        aux2 = A[:, aux[0][0]]
+        w[first_basic] = -1.0*aux2
 
     w = w.tolist()
+
     if status == 'otima':
         print(status)
         print(z)
@@ -168,4 +172,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
