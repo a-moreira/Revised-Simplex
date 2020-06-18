@@ -1,7 +1,7 @@
 # Two-Phase Revised Simplex
 
 ### Details 
-Adaptation of the Revised Simplex Algorithm as described in `Linear Programming and Network Flows 4th edition, by Bazaraa, Jarvis and Sherali`.
+Adaptation of the Revised Simplex Algorithm described in `Linear Programming and Network Flows 4th edition, by Bazaraa, Jarvis and Sherali`.
 
 
 Additional features:
