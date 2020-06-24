@@ -19,6 +19,11 @@ def create_model(model, n_cols, n_rows):
     A = np.append(A, Id, axis=1)
     non_basic = [i for i in range(n_cols)]
     basic = [i + n_cols for i in range(n_rows)]
+    print(A)
+    print(c)
+    print(b)
+    print(non_basic)
+    print(basic)
 
     return c, A, b, non_basic, basic
 
@@ -48,10 +53,10 @@ def step_three(A, idx, basic):
     return y
 
 
-def step_four(A, b, y, basic, minimum_2):
+def step_four(A, b, y, basic, minimum_2, xB):
     for i in range(len(basic)):
         if y[i] > 0:
-            aux = b[i] / y[i]
+            aux = xB[i] / y[i]
             if aux < minimum_2:
                 minimum_2 = aux
                 idx = i
@@ -65,9 +70,15 @@ def solve(c, A, b, non_basic, basic, minimum, minimum_2):
     while True:
         xB, z = step_one(A, b, c, basic, non_basic)
 
+        print("xB", xB)
+        print("z", z)
+
         # idx is the index of the variable entering the base
         # w is the certificate
         w, minimum, idx = step_two(A, b, c, basic, non_basic, xB, minimum)
+
+        print("w", w)
+        print("idx", idx)
 
         if minimum >= 0:
             status = "optimal"
@@ -76,11 +87,15 @@ def solve(c, A, b, non_basic, basic, minimum, minimum_2):
             minimum = float('inf')
         y = step_three(A, idx, basic)
 
+        print("y", y)
+
         if (y <= 0).all():
             status = "unlimited"
             break
 
-        leaving_var = step_four(A, b, y, basic, minimum_2)
+        leaving_var = step_four(A, b, y, basic, minimum_2, xB)
+        print("leaving", leaving_var)
+        print("basis", basic)
 
         non_basic.remove(idx)
         basic.append(idx)
@@ -88,6 +103,8 @@ def solve(c, A, b, non_basic, basic, minimum, minimum_2):
         non_basic.append(leaving_var)
         basic.sort()
         non_basic.sort()
+
+        print("z", z)
 
     return z, w, status, xB
 
