@@ -1,7 +1,7 @@
 # Simplex
 
 ### Details 
-Simple implementation of the Simplex algorithm described in `Linear Programming and Network Flows 4th edition, by Bazaraa, Jarvis and Sherali`
+A simple implementation of the Simplex algorithm described in `Linear Programming and Network Flows 4th edition, by Bazaraa, Jarvis and Sherali`
 
 
 ## Linear Programming
@@ -26,7 +26,7 @@ tests/test_1.txt
 ```
 ##### Run
 ```
-$ python3 simplex.py tests/test_1.txt
+$ python3 main.py tests/test_1.txt
 ```
 
 ##### Output
