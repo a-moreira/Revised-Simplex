@@ -7,17 +7,9 @@ def main():
     model, n_rows, n_cols = simplex.read_model(new_file)
     c, A, b, non_basic, basic = simplex.create_model(model, n_rows, n_cols)
 
-    # _xB, _basic, _non_basic = simplex.solve_auxiliary_lp(A, b)
-
     if (b < 0).any():
         print("\nThere are negative elements in the b vector.\nI'm sorry, I can't solve this yet :-(\n")
         return
-
-    # check = simplex.check_feasibility(A, b)
-    # print(check) 
-    # if check is False:
-    #     A, b, c, basic, non_basic = simplex.create_auxiliary(A, b)
-    #     z, w, xB, basic, status = simplex.solve(A, b, c, basic, non_basic) 
 
     z, w, xB, basic, status = simplex.solve(A, b, c, basic, non_basic)
     print("obj:", z)
