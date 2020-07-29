@@ -1,23 +1,16 @@
-# Two-Phase Revised Simplex
+# Simplex
 
 ### Details 
-Adaptation of the Revised Simplex Algorithm described in `Linear Programming and Network Flows 4th edition, by Bazaraa, Jarvis and Sherali`.
-
-
-Additionally:
-* The Two-Phase Method to provide a starting basic feasible solution for the original problem.
-* Certificates of optimality, infeasibility and unboundedness
-* The canonical LP form as input 
+Simple implementation of the Simplex algorithm described in `Linear Programming and Network Flows 4th edition, by Bazaraa, Jarvis and Sherali`
 
 
 ## Linear Programming
-We wish to maximize a linear function subject to a set of linear constraints:
-##### The canonical form
+We wish to maximize a linear function subject to a set of linear constraints in the form:
 ```                                                                                               
 max   c'x                                           // c' is the transposed vector of costs,
 s.t.                                                // x is the vector of decision variables,     
      Ax <= b                                        // A is the constraint matrix,
-      x >= 0                                        // b is a constant vector
+      x >= 0                                        // b is a non-negative constant vector
 ```
 
 ### Examples
@@ -44,7 +37,8 @@ optimal                                                         // status
 2.0 4.0 8.0                                                     // decision vector  
 ```
 
+##### Disclaimer
+This implementation serves an educational purpose and it's not optimized for large instances. It can probably find your solution, but it might take forever.
 
 #### License
-This project is a free software licensed under GNU General Public License v2.0 or later.
-
+This project is free software licensed under GNU General Public License v2.0 or later.
