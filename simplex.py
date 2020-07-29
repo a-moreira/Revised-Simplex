@@ -56,14 +56,14 @@ def step_four(A, b, y, basic, xB):
 
 def solve(A, b, c, basic, non_basic):
     while True:
-        print("basic", basic)
-        print("non_basic", non_basic)
+        # print("basic", basic)
+        # print("non_basic", non_basic)
         xB, z = step_one(A, b, c, basic, non_basic)
         w, aux, idx = step_two(A, b, c, basic, non_basic, xB)
-        print("w", w)
-        print("aux", aux)
-        print("idx", idx)
-        print("z", z) 
+        # print("w", w)
+        # print("aux", aux)
+        # print("idx", idx)
+        # print("z", z) 
         if aux >= 0:
             status = "optimal"
             break
@@ -71,7 +71,7 @@ def solve(A, b, c, basic, non_basic):
             aux = float("inf")
         
         y = step_three(A, idx, basic)
-        print ("y", y)
+        # print ("y", y)
         
         if (y <= 0).all():
             status = "unbounded"
@@ -79,7 +79,7 @@ def solve(A, b, c, basic, non_basic):
         
         # print("basic", basic) 
         leaving_var = step_four(A, b, y, basic, xB)
-        print("leaving_var", leaving_var)
+        # print("leaving_var", leaving_var)
 
         non_basic.remove(idx)
         basic.append(idx)

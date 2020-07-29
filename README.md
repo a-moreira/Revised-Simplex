@@ -1,6 +1,6 @@
 # Simplex
 
-Simple implementation of the Simplex algorithm described in `Linear Programming and Network Flows 4th edition, by Bazaraa, Jarvis and Sherali`
+A simple implementation of the Simplex algorithm adapted from `Linear Programming and Network Flows 4th edition, by Bazaraa, Jarvis and Sherali`
 
 
 ## Linear Programming
@@ -25,7 +25,7 @@ tests/test_1.txt
 ```
 ##### Run
 ```
-$ python3 simplex.py tests/test_1.txt
+$ python3 main.py tests/test_1.txt
 ```
 
 ##### Output
@@ -35,7 +35,7 @@ optimal                                                         // status
 2.0 4.0 8.0                                                     // decision vector  
 ```
 
-##### Disclaimer
+#### Disclaimer
 This implementation serves an educational purpose and it's not optimized for huge instances. It can probably find your solution, but it might take forever. This version is not prepared to deal with degeneracy either.
 
 #### License
