@@ -36,7 +36,7 @@ optimal                                                         // status
 ```
 
 #### Disclaimer
-This implementation serves an educational purpose and it's not optimized for huge instances. It can probably find your solution, but it might take forever. This version is not prepared to deal with degeneracy either.
+This implementation serves an educational purpose, it probably has a lot of bugs
 
 #### License
 This project is free software licensed under GNU General Public License v2.0 or later.
